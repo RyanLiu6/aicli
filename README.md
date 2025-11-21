@@ -27,16 +27,17 @@ Configures Claude Code behavior and tool permissions:
 
 ### Memory (`memory/`)
 
-Core memory files containing cross-project knowledge and workflows that persist across sessions:
-
-- **project-notes-workflow.md**: Guidelines for organizing project-specific notes vs. core memories
-  - Project notes go in `_claude/` directories within each project
-  - Only promote to core memory when explicitly requested
-  - Keeps project knowledge isolated while preserving important patterns
+Core memory files containing cross-project knowledge and workflows that persist across sessions. See [memory/README.md](memory/README.md) for details on:
+- What belongs in core memory vs. project-specific notes
+- Current memory files and their purposes
+- Best practices for managing core memory
 
 ### Skills (`skills/`)
 
-Directory for custom reusable skills that can be invoked across different projects. Currently empty but ready for future additions.
+Directory for custom reusable skills that can be invoked across different projects. See [skills/README.md](skills/README.md) for:
+- What skills are and how they work
+- How to create custom skills
+- Usage examples and best practices
 
 ## Usage
 

@@ -30,5 +30,6 @@
     ],
     "defaultMode": "acceptEdits"
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "includeCoAuthoredBy": false
 }

@@ -9,8 +9,24 @@ Personal configuration repository for [Claude Code](https://claude.com/claude-co
 ├── settings.json              # Claude Code settings and permissions
 ├── memory/                    # Core memory files (cross-project knowledge)
 │   └── project-notes-workflow.md
-└── skills/                    # Reusable skills (currently empty)
+├── skills/                    # Reusable skills (currently empty)
+└── scripts/                   # Setup and utility scripts
+    └── setup.sh               # Symlink configuration setup
 ```
+
+## Getting Started
+
+1. Clone this repository
+2. Run the setup script to create symlinks:
+   ```bash
+   ./scripts/setup.sh
+   ```
+   This will symlink the configuration files to your Claude Code config directory (`~/.claude` by default)
+3. Customize `settings.json` to match your workflow preferences
+4. Add cross-project knowledge to `memory/` as needed
+5. Create reusable skills in `skills/` for common tasks
+
+The setup script creates symlinks, so changes made in either location (this repo or `~/.claude`) will be synchronized automatically.
 
 ## Components
 
@@ -24,6 +40,7 @@ Configures Claude Code behavior and tool permissions:
   - File deletions (`rm`)
 - **Default Mode**: `acceptEdits` - automatically accept file edits
 - **Always Thinking**: Enabled for better reasoning transparency
+- **Co-authored-by**: Disabled - git commits won't include Claude Code co-author attribution
 
 ### Memory (`memory/`)
 
@@ -49,10 +66,3 @@ This setup follows a clear separation of concerns:
 - **Project-specific knowledge** stays in project `_claude/` directories
 - **Core memory** contains only curated, cross-project insights
 - **Settings** balance automation with safety (auto-accept edits, but confirm destructive operations)
-
-## Getting Started
-
-1. Place this repository in your Claude Code configuration directory
-2. Customize `settings.json` to match your workflow preferences
-3. Add cross-project knowledge to `memory/` as needed
-4. Create reusable skills in `skills/` for common tasks

@@ -65,10 +65,11 @@ echo ""
 echo "Setting up symlinks..."
 echo ""
 
-# Symlink memory directory
-create_symlink "$REPO_ROOT/memory" "$CLAUDE_CONFIG_DIR/memory" "memory"
+# Symlink CLAUDE.md (main global config)
+# Note: memory/ files are imported via @path in CLAUDE.md, so no symlink needed
+create_symlink "$REPO_ROOT/CLAUDE.md" "$CLAUDE_CONFIG_DIR/CLAUDE.md" "CLAUDE.md"
 
-# Symlink skills directory
+# Symlink skills directory (Claude Code scans this directory)
 create_symlink "$REPO_ROOT/skills" "$CLAUDE_CONFIG_DIR/skills" "skills"
 
 # Symlink settings.json

@@ -8,6 +8,15 @@ Skills are specialized capabilities that can be called by name to perform specif
 
 ## Current Skills
 
+### make-commits.md
+Analyze the working tree and create logical commits from staged/unstaged changes. This skill:
+- Breaks changes into logical groups (features, bug fixes, components)
+- Runs lints and type-checks before committing
+- Creates commits with descriptive messages following repo style
+- Uses TodoWrite to track commit progress
+- Never commits to main/master directly
+- Does NOT push - only creates local commits
+
 ### create-pr.md
 Create pull requests with concise, well-formatted descriptions. This skill:
 - Ensures you're on a feature branch (not main/master)
@@ -15,6 +24,15 @@ Create pull requests with concise, well-formatted descriptions. This skill:
 - Asks for user confirmation before pushing (respects git workflow rules)
 - Creates PR with concise bullet-point summary
 - Follows consistent formatting conventions
+
+### update-pr.md
+Update existing pull requests with new commits and refreshed descriptions. This skill:
+- Verifies you're on a branch with an existing PR
+- Shows ALL commits in the branch (not just unpushed)
+- Asks for user confirmation before pushing (respects git workflow rules)
+- Recomputes PR description from scratch based on all commits
+- Updates title only if needed
+- Handles already-pushed commits gracefully
 
 ## What Are Skills?
 

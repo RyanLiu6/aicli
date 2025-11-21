@@ -6,9 +6,15 @@ Reusable skills that can be invoked across different projects in Claude Code.
 
 Skills are specialized capabilities that can be called by name to perform specific tasks. They provide domain expertise and can be reused across all your projects.
 
-## Directory Status
+## Current Skills
 
-Currently empty. This directory is ready for custom skills as you develop workflows that would benefit from reusable skill definitions.
+### create-pr.md
+Create pull requests with concise, well-formatted descriptions. This skill:
+- Ensures you're on a feature branch (not main/master)
+- Reviews commits and changes
+- Asks for user confirmation before pushing (respects git workflow rules)
+- Creates PR with concise bullet-point summary
+- Follows consistent formatting conventions
 
 ## What Are Skills?
 

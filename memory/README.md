@@ -16,7 +16,31 @@ Only promote content to core memory when:
 
 **Note**: Don't automatically add things here. Core memory should be intentionally curated to avoid clutter.
 
+## How Memory Files Are Loaded
+
+Memory files are imported by the main `CLAUDE.md` file using the `@path` syntax:
+```markdown
+@memory/base.md
+@memory/project-notes-workflow.md
+```
+
+When `~/claude/CLAUDE.md` is symlinked to `~/.claude/CLAUDE.md`, Claude Code automatically loads all imported memory files at startup.
+
+**Important**: The memory/ folder itself is NOT symlinked. The `@path` imports in CLAUDE.md resolve relative to the actual file location (`~/claude/`), so memory files are accessed directly from your git repo. This means:
+- Memory files stay in version control
+- No need to symlink the memory/ directory
+- Changes to memory files are immediately active
+
 ## Current Memory Files
+
+### base.md
+Core global rules and preferences that apply to all Claude Code sessions:
+- Git workflow rules (commit/push behavior)
+- Code style preferences
+- Communication preferences
+- Other fundamental rules that should always be active
+
+**This is the foundation** - add universal rules here that should apply everywhere.
 
 ### project-notes-workflow.md
 Guidelines for organizing project-specific notes vs. core memories:

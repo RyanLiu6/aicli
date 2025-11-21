@@ -6,9 +6,12 @@ Personal configuration repository for [Claude Code](https://claude.com/claude-co
 
 ```
 .
+├── CLAUDE.md                  # Main global config (symlinked to ~/.claude/CLAUDE.md)
 ├── settings.json              # Claude Code settings and permissions
 ├── memory/                    # Core memory files (cross-project knowledge)
-│   └── project-notes-workflow.md
+│   ├── base.md                # Base global rules (git workflow, etc.)
+│   ├── project-notes-workflow.md
+│   └── README.md
 ├── skills/                    # Reusable skills (currently empty)
 └── scripts/                   # Setup and utility scripts
     └── setup.sh               # Symlink configuration setup
@@ -16,19 +19,50 @@ Personal configuration repository for [Claude Code](https://claude.com/claude-co
 
 ## Getting Started
 
-1. Clone this repository
-2. Run the setup script to create symlinks:
-   ```bash
-   ./scripts/setup.sh
-   ```
-   This will symlink the configuration files to your Claude Code config directory (`~/.claude` by default)
-3. Customize `settings.json` to match your workflow preferences
-4. Add cross-project knowledge to `memory/` as needed
-5. Create reusable skills in `skills/` for common tasks
+### Initial Setup
 
-The setup script creates symlinks, so changes made in either location (this repo or `~/.claude`) will be synchronized automatically.
+```bash
+# Clone this repository
+git clone <your-repo-url> ~/claude
+cd ~/claude
+
+# Run the setup script
+./scripts/setup.sh
+```
+
+The setup script creates symlinks from `~/.claude/` to this repo, so changes in either location stay synchronized.
+
+### On New Machines
+
+Simply clone the repo and run `./scripts/setup.sh` - all your Claude Code configuration will be instantly available.
+
+## How It Works
+
+```
+Your git repo (~/claude)              Claude Code reads from
+├── CLAUDE.md          ────symlink──→ ~/.claude/CLAUDE.md
+├── memory/            (no symlink)
+│   ├── base.md        ←──@import─── (imported by CLAUDE.md)
+│   └── project-notes-workflow.md ← (imported by CLAUDE.md)
+├── skills/            ────symlink──→ ~/.claude/skills/
+└── settings.json      ────symlink──→ ~/.claude/settings.json
+```
+
+**Key insight**: Only CLAUDE.md, skills/, and settings.json are symlinked. The memory/ folder stays in the repo and is accessed via `@path` imports in CLAUDE.md.
 
 ## Components
+
+### Global Configuration (`CLAUDE.md`)
+
+The main global configuration file that gets symlinked to `~/.claude/CLAUDE.md`. This file:
+- Uses `@path` syntax to import memory files from the repo
+- Keeps all configuration version-controlled
+- Enables portable setup across machines
+- Currently imports:
+  - `memory/base.md` - Core global rules (git workflow)
+  - `memory/project-notes-workflow.md` - Notes organization guidelines
+
+**Key benefit**: By symlinking CLAUDE.md (which imports memory files via `@path`), your entire configuration stays in this git repo without needing to symlink the memory folder itself.
 
 ### Settings (`settings.json`)
 
@@ -58,7 +92,33 @@ Directory for custom reusable skills that can be invoked across different projec
 
 ## Usage
 
-This configuration is automatically loaded by Claude Code when it's placed in the appropriate location. The settings define how Claude Code interacts with your system, while memory files provide persistent context across sessions.
+### Adding New Memory Files
+
+1. Create a new memory file:
+   ```bash
+   echo "# My Custom Rules" > memory/my-rules.md
+   ```
+
+2. Import it in `CLAUDE.md`:
+   ```markdown
+   @memory/my-rules.md
+   ```
+
+3. Commit to git:
+   ```bash
+   git add memory/my-rules.md CLAUDE.md
+   git commit -m "Add custom rules memory"
+   ```
+
+Changes take effect immediately - no need to restart Claude Code.
+
+### Customizing Settings
+
+Edit `settings.json` to adjust permissions, default modes, and other behavior. Changes are synced via symlink.
+
+### Creating Skills
+
+Add custom skills to `skills/` directory. See [skills/README.md](skills/README.md) for details.
 
 ## Philosophy
 

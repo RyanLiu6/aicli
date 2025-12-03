@@ -1,0 +1,24 @@
+{
+  "tools": {
+    "claude": {
+      "name": "Claude Code",
+      "config_dir": "~/.claude",
+      "tool_dir": "claude",
+      "symlinks": [
+        {"source": "CLAUDE.md", "target": "CLAUDE.md"},
+        {"source": "settings.json", "target": "settings.json"},
+        {"source": "skills", "target": "skills"}
+      ]
+    },
+    "gemini": {
+      "name": "Gemini CLI",
+      "config_dir": "~/.gemini",
+      "tool_dir": "gemini",
+      "symlinks": [
+        {"source": "GEMINI.md", "target": "GEMINI.md"},
+        {"source": "settings.json", "target": "settings.json"},
+        {"source": "commands", "target": "commands"}
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "general": {
+    "vimMode": false
+  },
+  "security": {
+    "disableYoloMode": false,
+    "blockGitExtensions": false,
+    "folderTrust": {
+      "enabled": false
+    }
+  }
+}

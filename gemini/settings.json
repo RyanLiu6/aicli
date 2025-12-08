@@ -17,6 +17,7 @@
     "allow": [
       "*",
       "Bash",
+      "Bash(git:*)",
       "Read",
       "Write",
       "Edit",

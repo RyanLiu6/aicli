@@ -1,12 +1,48 @@
 {
   "general": {
-    "vimMode": false
+    "vimMode": false,
+    "previewFeatures": true
   },
   "security": {
     "disableYoloMode": false,
     "blockGitExtensions": false,
     "folderTrust": {
       "enabled": false
+    },
+    "auth": {
+      "selectedType": "oauth-personal"
     }
-  }
+  },
+  "permissions": {
+    "allow": [
+      "*",
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Task",
+      "TodoWrite",
+      "WebFetch",
+      "WebSearch",
+      "NotebookEdit",
+      "NotebookRead",
+      "AskUserQuestion",
+      "Skill",
+      "SlashCommand",
+      "BashOutput",
+      "KillShell",
+      "mcp__playwright__*",
+      "mcp__chrome-devtools__*"
+    ],
+    "deny": [],
+    "ask": [
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(rm:*)"
+    ],
+    "defaultMode": "acceptEdits"
+  },
+  "model": "gemini-3-pro-preview"
 }

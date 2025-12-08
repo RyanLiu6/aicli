@@ -1,0 +1,97 @@
+name: Test Setup Script
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-setup:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Run setup script
+      run: |
+        python scripts/setup.py
+
+    - name: Verify configuration files were created
+      run: |
+        echo "Checking configuration files..."
+
+        # Verify Claude config
+        if [ -d ~/.claude ]; then
+            echo "✓ ~/.claude directory exists"
+        else
+            echo "✗ ~/.claude directory missing"
+            exit 1
+        fi
+
+        if [ -L ~/.claude/CLAUDE.md ]; then
+            echo "✓ ~/.claude/CLAUDE.md symlink exists"
+        else
+            echo "✗ ~/.claude/CLAUDE.md symlink missing"
+            exit 1
+        fi
+        
+        if [ -L ~/.claude/settings.json ]; then
+            echo "✓ ~/.claude/settings.json symlink exists"
+        else
+            echo "✗ ~/.claude/settings.json symlink missing"
+            exit 1
+        fi
+
+        if [ -L ~/.claude/skills ]; then
+            echo "✓ ~/.claude/skills symlink exists"
+        else
+            echo "✗ ~/.claude/skills symlink missing"
+            exit 1
+        fi
+
+        # Verify Gemini config
+        if [ -d ~/.gemini ]; then
+            echo "✓ ~/.gemini directory exists"
+        else
+            echo "✗ ~/.gemini directory missing"
+            exit 1
+        fi
+
+        if [ -L ~/.gemini/GEMINI.md ]; then
+            echo "✓ ~/.gemini/GEMINI.md symlink exists"
+        else
+            echo "✗ ~/.gemini/GEMINI.md symlink missing"
+            exit 1
+        fi
+
+        if [ -L ~/.gemini/settings.json ]; then
+            echo "✓ ~/.gemini/settings.json symlink exists"
+        else
+            echo "✗ ~/.gemini/settings.json symlink missing"
+            exit 1
+        fi
+
+        if [ -L ~/.gemini/commands ]; then
+            echo "✓ ~/.gemini/commands symlink exists"
+        else
+            echo "✗ ~/.gemini/commands symlink missing"
+            exit 1
+        fi
+
+    - name: Test idempotency
+      run: |
+        echo "Testing that setup can be run multiple times..."
+        python scripts/setup.py
+        echo "✓ Setup script is idempotent"

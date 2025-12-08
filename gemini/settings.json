@@ -11,45 +11,45 @@
     },
     "auth": {
       "selectedType": "oauth-personal"
+    },
+    "permissions": {
+      "allow": [
+        "*",
+        "Bash",
+        "Bash(git)",
+        "Bash(git:*)",
+        "Bash(gh)",
+        "Bash(gh:*)",
+        "Read",
+        "Write",
+        "Edit",
+        "Glob",
+        "Grep",
+        "Task",
+        "TodoWrite",
+        "WebFetch",
+        "WebSearch",
+        "NotebookEdit",
+        "NotebookRead",
+        "AskUserQuestion",
+        "Skill",
+        "SlashCommand",
+        "BashOutput",
+        "KillShell",
+        "mcp__playwright__*",
+        "mcp__chrome-devtools__*"
+      ],
+      "deny": [],
+      "ask": [
+        "Bash(git commit)",
+        "Bash(git commit:*)",
+        "Bash(git push)",
+        "Bash(git push:*)",
+        "Bash(rm)",
+        "Bash(rm:*)"
+      ],
+      "defaultMode": "acceptEdits"
     }
-  },
-  "permissions": {
-    "allow": [
-      "*",
-      "Bash",
-      "Bash(git)",
-      "Bash(git:*)",
-      "Bash(gh)",
-      "Bash(gh:*)",
-      "Read",
-      "Write",
-      "Edit",
-      "Glob",
-      "Grep",
-      "Task",
-      "TodoWrite",
-      "WebFetch",
-      "WebSearch",
-      "NotebookEdit",
-      "NotebookRead",
-      "AskUserQuestion",
-      "Skill",
-      "SlashCommand",
-      "BashOutput",
-      "KillShell",
-      "mcp__playwright__*",
-      "mcp__chrome-devtools__*"
-    ],
-    "deny": [],
-    "ask": [
-      "Bash(git commit)",
-      "Bash(git commit:*)",
-      "Bash(git push)",
-      "Bash(git push:*)",
-      "Bash(rm)",
-      "Bash(rm:*)"
-    ],
-    "defaultMode": "acceptEdits"
   },
   "model": "gemini-3-pro-preview"
 }

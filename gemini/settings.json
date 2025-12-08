@@ -7,7 +7,7 @@
     "disableYoloMode": false,
     "blockGitExtensions": false,
     "folderTrust": {
-      "enabled": false
+      "enabled": true
     },
     "auth": {
       "selectedType": "oauth-personal"

@@ -5,7 +5,7 @@
   },
   "security": {
     "folderTrust": {
-      "enabled": true
+      "enabled": false
     },
     "auth": {
       "selectedType": "oauth-personal"

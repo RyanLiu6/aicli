@@ -47,6 +47,45 @@ def load_tools_config(repo_root: Path) -> dict:
         return json.load(f)
 
 
+SHELL_ALIASES = {
+    "gemini": {
+        "alias": "alias gemini='gemini --yolo'",
+        "comment": "# Gemini CLI: run in yolo mode (auto-approve all tools)",
+    },
+}
+
+
+def setup_shell_alias(tool_id: str) -> bool:
+    """Add shell alias to ~/.zshrc if it doesn't exist."""
+    if tool_id not in SHELL_ALIASES:
+        return True
+
+    alias_config = SHELL_ALIASES[tool_id]
+    alias_line = alias_config["alias"]
+    comment_line = alias_config["comment"]
+
+    zshrc_path = Path.home() / ".zshrc"
+
+    if not zshrc_path.exists():
+        print_colored(f"  Warning: ~/.zshrc not found, skipping alias setup", Colors.YELLOW)
+        return False
+
+    with open(zshrc_path) as f:
+        content = f.read()
+
+    if alias_line in content:
+        print_colored(f"  Alias already exists in ~/.zshrc", Colors.GREEN)
+        return True
+
+    print_colored(f"  Adding alias to ~/.zshrc", Colors.GREEN)
+    with open(zshrc_path, "a") as f:
+        f.write(f"\n{comment_line}\n{alias_line}\n")
+
+    print(f"    Added: {alias_line}")
+    print_colored(f"  Run 'source ~/.zshrc' or restart your shell to apply", Colors.YELLOW)
+    return True
+
+
 def backup_if_exists(path: Path) -> None:
     if path.exists() and not path.is_symlink():
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -100,6 +139,9 @@ def setup_tool(tool_id: str, tool_config: dict, repo_root: Path) -> bool:
 
         if not create_symlink(source, target, symlink["source"]):
             success = False
+
+    # Setup shell aliases if needed
+    setup_shell_alias(tool_id)
 
     return success
 

@@ -12,6 +12,7 @@
     }
   },
   "tools": {
+    "allowed": ["run_shell_command"],
     "exclude": [
       "run_shell_command(git commit)",
       "run_shell_command(git push)",

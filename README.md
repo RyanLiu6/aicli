@@ -62,3 +62,23 @@ uv run gemini-to-claude  # Gemini → Claude
 
 2. Create directory and config file with shared imports
 3. Run `uv run setup newtool`
+
+## Known Issues
+
+### Gemini CLI: Tool Permissions Don't Persist (as of Dec 2024)
+
+The `tools.allowed` and `tools.exclude` settings in `settings.json` **only work in non-interactive mode** (e.g., `gemini -p "prompt"`). In interactive mode, Gemini CLI ignores these settings and prompts for every command.
+
+**Related GitHub Issues:**
+- [#4340](https://github.com/google-gemini/gemini-cli/issues/4340) - "Always Approve" not persisting across sessions
+- [#13737](https://github.com/google-gemini/gemini-cli/issues/13737) - Feature request to save permissions to settings
+
+**Workaround:** The setup script automatically adds an alias to `~/.zshrc`:
+
+```bash
+alias gemini='gemini --yolo'
+```
+
+This bypasses all confirmation prompts. Run `source ~/.zshrc` after setup to apply.
+
+**Status:** Check the issues above to see if this has been fixed. Once fixed, remove the alias from `~/.zshrc`.

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
-Sync skills/commands between Claude Code and Gemini CLI.
+Sync skills/commands between Claude Code, Gemini CLI, and OpenCode.
 
-Converts between Claude Code skills (markdown) and Gemini CLI commands (TOML).
+Converts between:
+- Claude Code skills (markdown with YAML frontmatter)
+- Gemini CLI commands (TOML)
+- OpenCode commands (markdown with YAML frontmatter)
 """
 
 import re
@@ -24,6 +27,11 @@ TOOLS = {
         "dir": "gemini/commands",
         "ext": ".toml",
         "name": "Gemini Commands",
+    },
+    "opencode": {
+        "dir": "opencode/command",
+        "ext": ".md",
+        "name": "OpenCode Commands",
     },
 }
 
@@ -86,7 +94,7 @@ def skill_to_command(skill_path: Path) -> tuple[str, str, str]:
 
 
 def command_to_skill(command_path: Path) -> tuple[str, str, str]:
-    """Convert a Gemini command (toml) to Claude skill (md)."""
+    """Convert a Gemini command (toml) to Claude/OpenCode skill (md)."""
     content = command_path.read_text()
     parsed = parse_toml(content)
 
@@ -106,9 +114,22 @@ def command_to_skill(command_path: Path) -> tuple[str, str, str]:
     return name, description, "\n".join(lines)
 
 
+def copy_markdown(source_path: Path) -> tuple[str, str, str]:
+    """Copy markdown between Claude and OpenCode (same format)."""
+    content = source_path.read_text().rstrip()
+    frontmatter, _ = parse_frontmatter(content)
+    name = source_path.stem
+    description = frontmatter.get("description", "")
+    return name, description, content
+
+
 CONVERTERS = {
     ("claude", "gemini"): skill_to_command,
+    ("claude", "opencode"): copy_markdown,
     ("gemini", "claude"): command_to_skill,
+    ("gemini", "opencode"): command_to_skill,
+    ("opencode", "claude"): copy_markdown,
+    ("opencode", "gemini"): skill_to_command,
 }
 
 
@@ -134,7 +155,7 @@ CONVERTERS = {
     help="Preview changes without writing files",
 )
 def main(source: str, target: str, dry_run: bool) -> None:
-    """Sync skills/commands between Claude Code and Gemini CLI."""
+    """Sync skills/commands between Claude Code, Gemini CLI, and OpenCode."""
     repo_root = get_repo_root()
 
     if source == target:
@@ -200,9 +221,29 @@ def claude_to_gemini() -> None:
     main(["--from", "claude", "--to", "gemini"])
 
 
+def claude_to_opencode() -> None:
+    """Sync Claude skills to OpenCode commands."""
+    main(["--from", "claude", "--to", "opencode"])
+
+
 def gemini_to_claude() -> None:
     """Sync Gemini commands to Claude skills."""
     main(["--from", "gemini", "--to", "claude"])
+
+
+def gemini_to_opencode() -> None:
+    """Sync Gemini commands to OpenCode commands."""
+    main(["--from", "gemini", "--to", "opencode"])
+
+
+def opencode_to_claude() -> None:
+    """Sync OpenCode commands to Claude skills."""
+    main(["--from", "opencode", "--to", "claude"])
+
+
+def opencode_to_gemini() -> None:
+    """Sync OpenCode commands to Gemini commands."""
+    main(["--from", "opencode", "--to", "gemini"])
 
 
 if __name__ == "__main__":

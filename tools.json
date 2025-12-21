@@ -19,6 +19,16 @@
         {"source": "settings.json", "target": "settings.json"},
         {"source": "commands", "target": "commands"}
       ]
+    },
+    "opencode": {
+      "name": "OpenCode",
+      "config_dir": "~/.config/opencode",
+      "tool_dir": "opencode",
+      "symlinks": [
+        {"source": "AGENTS.md", "target": "AGENTS.md"},
+        {"source": "opencode.json", "target": "opencode.json"},
+        {"source": "command", "target": "command"}
+      ]
     }
   }
 }

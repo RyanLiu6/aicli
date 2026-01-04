@@ -12,43 +12,26 @@ Create a pull request with a concise, well-formatted description.
 2. **Review changes**: Check git status and recent commits
 3. **Check with user**: Confirm before pushing (per user's git workflow rules)
 4. **Push to origin**: Push to `origin` from the current branch (if needed)
-5. **Create PR**: Use `gh pr create` with concise description
-6. **Format description**: Small bullet points, derived from conversation and commits
+5. **Create PR**: Use `gh pr create` with description from template
+6. **Return PR URL**
+
+## PR Title Format
+
+- If user provides a Linear ticket (e.g., `[DP-1234]`), use: `[DP-1234] - Brief title`
+- Otherwise, just use: `Brief title`
 
 ## PR Description Format
 
-Keep it **very concise**. Use this structure:
+Use the template at `templates/pr-description.md`:
 
 ```
-## Summary
-<1-3 bullet points of what changed>
+### Why are you making these changes?
 
-## Test plan
-[Optional: Only if testing steps are needed]
-```
+<!-- Explain the context, problem, and solution -->
 
-### Good examples
+### How has this been tested?
 
-```
-## Summary
-- Fix deduplication in welcome message
-- Add sorting to package list
-- Improve logging on package updates
-```
-
-```
-## Summary
-- Add cache timestamp on initial install
-- Prevent stale cache issues
-```
-
-### Bad examples (too verbose)
-
-```
-## Summary
-- This PR implements a comprehensive solution to fix the deduplication
-  logic in the welcome message handler by refactoring the underlying
-  data structure and adding a new sorting algorithm...
+<!-- Describe testing approach -->
 ```
 
 ## Instructions
@@ -74,26 +57,21 @@ Keep it **very concise**. Use this structure:
    git push -u origin <current-branch>
    ```
 
-6. Create PR with concise description:
+6. Create PR:
    ```bash
-   gh pr create --title "Brief title" --body "$(cat <<'EOF'
-   ## Summary
-   - First change
-   - Second change
-   - Third change
+   gh pr create --title "[DP-XXXX] - Brief title" --body "$(cat <<'EOF'
+   ### Why are you making these changes?
+
+   <context and explanation>
+
+   ### How has this been tested?
+
+   <testing approach>
    EOF
    )"
    ```
 
 7. Return the PR URL to the user
-
-## Key principles
-
-- **Be concise**: Each bullet should be one line
-- **Focus on what**: Describe the change, not implementation details
-- **Derive from context**: Use commit messages and conversation
-- **No fluff**: Avoid phrases like "This PR implements" or "In this change"
-- **Action-oriented**: Start bullets with verbs (Add, Fix, Update, Remove)
 
 ## Notes
 

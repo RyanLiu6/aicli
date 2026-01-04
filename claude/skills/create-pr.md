@@ -13,19 +13,24 @@ description: Create pull requests with concise descriptions
 5. Create PR with `gh pr create`
 6. Return the PR URL
 
-## PR Format
+## PR Title Format
+
+- If user provides a Linear ticket (e.g., `[DP-1234]`), use: `[DP-1234] - Brief title`
+- Otherwise, just use: `Brief title`
+
+## PR Description Format
+
+Use the template at `templates/pr-description.md`:
 
 ```markdown
-## Summary
-- First change (verb: Add, Fix, Update, Remove)
-- Second change
-- Third change
+### Why are you making these changes?
 
-## Test plan
-[Optional: only if needed]
+<!-- Explain the context, problem, and solution -->
+
+### How has this been tested?
+
+<!-- Describe testing approach -->
 ```
-
-Keep bullets to one line each. No fluff like "This PR implements..."
 
 ## Notes
 

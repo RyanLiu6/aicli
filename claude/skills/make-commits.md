@@ -1,3 +1,7 @@
+---
+description: Analyze working tree and create logical commits from staged/unstaged changes
+---
+
 # Make Commits
 
 Analyze the working tree and create logical commits from staged/unstaged changes.

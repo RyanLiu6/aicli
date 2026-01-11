@@ -3,7 +3,7 @@
     "claude": {
       "name": "Claude Code",
       "config_dir": "~/.claude",
-      "tool_dir": "claude",
+      "tool_dir": "modules/claude",
       "symlinks": [
         {"source": "CLAUDE.md", "target": "CLAUDE.md"},
         {"source": "settings.json", "target": "settings.json"},
@@ -13,7 +13,7 @@
     "gemini": {
       "name": "Gemini CLI",
       "config_dir": "~/.gemini",
-      "tool_dir": "gemini",
+      "tool_dir": "modules/gemini",
       "symlinks": [
         {"source": "GEMINI.md", "target": "GEMINI.md"},
         {"source": "settings.json", "target": "settings.json"},
@@ -23,7 +23,7 @@
     "opencode": {
       "name": "OpenCode",
       "config_dir": "~/.config/opencode",
-      "tool_dir": "opencode",
+      "tool_dir": "modules/opencode",
       "symlinks": [
         {"source": "AGENTS.md", "target": "AGENTS.md"},
         {"source": "opencode.json", "target": "opencode.json"},

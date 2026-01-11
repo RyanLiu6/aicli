@@ -19,21 +19,24 @@ console = Console()
 
 TOOLS = {
     "claude": {
-        "dir": "claude/skills",
+        "dir": "modules/claude/skills",
         "ext": ".md",
         "name": "Claude Skills",
     },
     "gemini": {
-        "dir": "gemini/commands",
+        "dir": "modules/gemini/commands",
         "ext": ".toml",
         "name": "Gemini Commands",
     },
     "opencode": {
-        "dir": "opencode/command",
+        "dir": "modules/opencode/command",
         "ext": ".md",
         "name": "OpenCode Commands",
     },
 }
+
+# Shared canonical skills directory
+SKILLS_DIR = "skills"
 
 
 def get_repo_root() -> Path:
@@ -211,7 +214,9 @@ def main(source: str, target: str, dry_run: bool) -> None:
     console.print()
 
     if dry_run:
-        console.print(f"[yellow]Dry run:[/yellow] {len(source_files)} file(s) would be synced")
+        console.print(
+            f"[yellow]Dry run:[/yellow] {len(source_files)} file(s) would be synced"
+        )
     else:
         console.print(f"[green]Synced:[/green] {synced} file(s)")
 
@@ -244,6 +249,46 @@ def opencode_to_claude() -> None:
 def opencode_to_gemini() -> None:
     """Sync OpenCode commands to Gemini commands."""
     main(["--from", "opencode", "--to", "gemini"])
+
+
+def sync_from_canonical() -> None:
+    """Sync all tools from the canonical skills/ directory."""
+    repo_root = get_repo_root()
+    skills_dir = repo_root / SKILLS_DIR
+
+    if not skills_dir.exists():
+        console.print(f"[red]Error:[/red] Skills directory not found: {skills_dir}")
+        raise SystemExit(1)
+
+    console.rule("[bold]Syncing from canonical skills/ directory[/bold]")
+
+    for tool_id in ["claude", "gemini", "opencode"]:
+        tool_cfg = TOOLS[tool_id]
+        target_dir = repo_root / tool_cfg["dir"]
+        target_ext = tool_cfg["ext"]
+
+        console.print(f"\n[bold]Syncing to {tool_cfg['name']}[/bold]")
+
+        if not target_dir.exists():
+            console.print(f"[yellow]Creating:[/yellow] {target_dir}")
+            target_dir.mkdir(parents=True)
+
+        source_files = list(skills_dir.glob("*.md"))
+
+        synced = 0
+        for source_path in sorted(source_files):
+            if tool_id == "gemini":
+                name, description, output_content = skill_to_command(source_path)
+            else:
+                name, description, output_content = copy_markdown(source_path)
+
+            target_path = target_dir / f"{name}{target_ext}"
+
+            console.print(f"  [green]→[/green] {source_path.name} → {target_path.name}")
+            target_path.write_text(output_content + "\n")
+            synced += 1
+
+        console.print(f"  [green]Synced:[/green] {synced} file(s)")
 
 
 if __name__ == "__main__":

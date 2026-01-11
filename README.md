@@ -1,6 +1,6 @@
 # aicli
 
-Unified configuration for AI CLI tools ([Claude Code](https://claude.com/claude-code), [Gemini CLI](https://github.com/google-gemini/gemini-cli)).
+Unified configuration for AI CLI tools ([Claude Code](https://claude.com/claude-code), [Gemini CLI](https://github.com/google-gemini/gemini-cli), [OpenCode](https://opencode.ai/)).
 
 ## Setup
 
@@ -16,52 +16,71 @@ uv run help          # show available commands
 ## Structure
 
 ```
-├── shared/memory/          # Shared rules (imported via @path in each tool's config)
-├── claude/                 # Claude Code: CLAUDE.md, settings.json, skills/
-├── gemini/                 # Gemini CLI: GEMINI.md, settings.json, commands/
+├── memory/                 # Shared rules (imported via @path in each tool's config)
+├── skills/                 # Canonical skills in markdown format (source of truth)
+├── modules/
+│   ├── claude/            # Claude Code: CLAUDE.md, settings.json, skills/
+│   ├── gemini/            # Gemini CLI: GEMINI.md, settings.json, commands/
+│   └── opencode/          # OpenCode: AGENTS.md, opencode.json, command/
 ├── tools.json              # Tool definitions for setup script
 ├── pyproject.toml          # Python dependencies (click, rich)
 └── scripts/
     ├── setup.py            # Creates symlinks to ~/.claude, ~/.gemini, etc.
-    └── sync_skills.py      # Syncs Claude skills ↔ Gemini commands
+    └── sync_skills.py      # Syncs canonical skills to all tools
 ```
 
 ## Adding Shared Rules
 
 ```bash
-echo "# My Rules" > shared/memory/my-rules.md
+echo "# My Rules" > memory/my-rules.md
 ```
 
 Then import in each tool's config:
 ```markdown
-@../shared/memory/my-rules.md
+@../../memory/my-rules.md
 ```
 
 ## Syncing Skills/Commands
 
-Claude Code uses "skills" (markdown) while Gemini CLI uses "commands" (TOML). Sync between them:
+The `skills/` directory contains canonical skills in markdown format. Use `sync-all` to sync to all tools:
 
 ```bash
-uv run claude-to-gemini  # Claude → Gemini
-uv run gemini-to-claude  # Gemini → Claude
+uv run sync-all  # Sync skills to Claude, Gemini, and OpenCode
+```
+
+Or sync to specific tools:
+```bash
+uv run claude-to-gemini    # Claude → Gemini (converts md to toml)
+uv run gemini-to-claude    # Gemini → Claude (converts toml to md)
+uv run claude-to-opencode  # Claude → OpenCode (copies md to md)
 ```
 
 ## Adding Tools
 
 1. Add to `tools.json`:
-   ```json
-   {
-     "newtool": {
-       "name": "New Tool",
-       "config_dir": "~/.newtool",
-       "tool_dir": "newtool",
-       "symlinks": [{"source": "CONFIG.md", "target": "CONFIG.md"}]
-     }
-   }
-   ```
+    ```json
+    {
+      "newtool": {
+        "name": "New Tool",
+        "config_dir": "~/.newtool",
+        "tool_dir": "modules/newtool",
+        "symlinks": [{"source": "CONFIG.md", "target": "CONFIG.md"}]
+      }
+    }
+    ```
 
-2. Create directory and config file with shared imports
-3. Run `uv run setup newtool`
+2. Create `modules/newtool/` directory and config file with shared imports:
+    ```markdown
+    @../../memory/base.md
+    ```
+
+3. Create the skills/commands directory and sync from canonical skills:
+    ```bash
+    mkdir -p modules/newtool/commands
+    uv run sync-all
+    ```
+
+4. Run `uv run setup newtool`
 
 ## Known Issues
 

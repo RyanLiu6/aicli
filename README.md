@@ -1,6 +1,6 @@
 # aicli
 
-Unified configuration for AI CLI tools ([Claude Code](https://claude.com/claude-code), [Gemini CLI](https://github.com/google-gemini/gemini-cli)).
+Unified configuration for AI CLI tools ([Claude Code](https://claude.com/claude-code), [Gemini CLI](https://github.com/google-gemini/gemini-cli), [OpenCode](https://opencode.ai/)).
 
 ## Setup
 
@@ -8,77 +8,86 @@ Unified configuration for AI CLI tools ([Claude Code](https://claude.com/claude-
 git clone git@github.com:RyanLiu6/aicli.git ~/aicli
 cd ~/aicli
 uv sync              # install dependencies
-uv run setup         # symlink all tools
-uv run setup claude  # symlink specific tool
-uv run help          # show available commands
+uv run setup         # setup all tools
+uv run setup claude  # setup specific tool
 ```
 
 ## Structure
 
 ```
-├── shared/memory/          # Shared rules (imported via @path in each tool's config)
-├── claude/                 # Claude Code: CLAUDE.md, settings.json, skills/
-├── gemini/                 # Gemini CLI: GEMINI.md, settings.json, commands/
+├── memory/                 # Shared rules (imported via @path in each tool's config)
+├── skills/                 # Canonical skills (source of truth, markdown format)
+├── templates/              # PR and review templates
+├── modules/
+│   ├── claude/             # Claude Code config (CLAUDE.md, settings.json)
+│   ├── gemini/             # Gemini CLI config (GEMINI.md, settings.json)
+│   └── opencode/           # OpenCode config (AGENTS.md, opencode.json)
 ├── tools.json              # Tool definitions for setup script
-├── pyproject.toml          # Python dependencies (click, rich)
-└── scripts/
-    ├── setup.py            # Creates symlinks to ~/.claude, ~/.gemini, etc.
-    └── sync_skills.py      # Syncs Claude skills ↔ Gemini commands
+└── scripts/setup.py        # Creates symlinks and generates skills
 ```
+
+## How It Works
+
+The `setup.py` script:
+1. Symlinks config files from `modules/<tool>/` to each tool's config directory
+2. For Claude/OpenCode: symlinks `skills/` directly (same markdown format)
+3. For Gemini: generates TOML files from markdown skills on-the-fly
+
+No manual syncing needed - just run `uv run setup` after adding or modifying skills.
 
 ## Adding Shared Rules
 
+Create a file in `memory/`:
 ```bash
-echo "# My Rules" > shared/memory/my-rules.md
+echo "# My Rules" > memory/my-rules.md
 ```
 
-Then import in each tool's config:
+Import in each tool's config file:
 ```markdown
-@../shared/memory/my-rules.md
+@../../memory/my-rules.md
 ```
 
-## Syncing Skills/Commands
+## Adding Skills
 
-Claude Code uses "skills" (markdown) while Gemini CLI uses "commands" (TOML). Sync between them:
+Add markdown files to `skills/`:
+```markdown
+---
+description: Brief description for the skill
+---
 
-```bash
-uv run claude-to-gemini  # Claude → Gemini
-uv run gemini-to-claude  # Gemini → Claude
+# Skill Name
+
+Instructions here...
 ```
 
-## Adding Tools
+Run `uv run setup` to apply changes.
+
+## Adding a New Tool
 
 1. Add to `tools.json`:
-   ```json
-   {
-     "newtool": {
-       "name": "New Tool",
-       "config_dir": "~/.newtool",
-       "tool_dir": "newtool",
-       "symlinks": [{"source": "CONFIG.md", "target": "CONFIG.md"}]
-     }
-   }
-   ```
+    ```json
+    "newtool": {
+      "name": "New Tool",
+      "config_dir": "~/.newtool",
+      "tool_dir": "modules/newtool",
+      "symlinks": [{"source": "CONFIG.md", "target": "CONFIG.md"}],
+      "skills_symlink": {"source": "skills", "target": "skills"}
+    }
+    ```
 
-2. Create directory and config file with shared imports
+2. Create `modules/newtool/` with config files
+
 3. Run `uv run setup newtool`
 
 ## Known Issues
 
-### Gemini CLI: Tool Permissions Don't Persist (as of Dec 2024)
+### Gemini CLI: Tool Permissions Don't Persist
 
-The `tools.allowed` and `tools.exclude` settings in `settings.json` **only work in non-interactive mode** (e.g., `gemini -p "prompt"`). In interactive mode, Gemini CLI ignores these settings and prompts for every command.
+The `tools.allowed` and `tools.exclude` settings in `settings.json` only work in non-interactive mode. In interactive mode, Gemini ignores these settings.
 
-**Related GitHub Issues:**
-- [#4340](https://github.com/google-gemini/gemini-cli/issues/4340) - "Always Approve" not persisting across sessions
-- [#13737](https://github.com/google-gemini/gemini-cli/issues/13737) - Feature request to save permissions to settings
-
-**Workaround:** The setup script automatically adds an alias to `~/.zshrc`:
-
+**Workaround:** The setup script adds an alias to `~/.zshrc`:
 ```bash
 alias gemini='gemini --yolo'
 ```
 
-This bypasses all confirmation prompts. Run `source ~/.zshrc` after setup to apply.
-
-**Status:** Check the issues above to see if this has been fixed. Once fixed, remove the alias from `~/.zshrc`.
+Run `source ~/.zshrc` after setup to apply.

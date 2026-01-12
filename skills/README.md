@@ -1,0 +1,77 @@
+# Skills
+
+Reusable skills that can be invoked across different projects in Claude Code.
+
+## Purpose
+
+Skills are specialized capabilities that can be called by name to perform specific tasks. They provide domain expertise and can be reused across all your projects.
+
+## Current Skills
+
+### make-commits.md
+Analyze the working tree and create logical commits from staged/unstaged changes. This skill:
+- Breaks changes into logical groups (features, bug fixes, components)
+- Runs lints and type-checks before committing
+- Creates commits with descriptive messages following repo style
+- Uses TodoWrite to track commit progress
+- Never commits to main/master directly
+- Does NOT push - only creates local commits
+
+### create-pr.md
+Create pull requests with concise, well-formatted descriptions. This skill:
+- Ensures you're on a feature branch (not main/master)
+- Reviews commits and changes
+- Asks for user confirmation before pushing (respects git workflow rules)
+- Creates PR with concise bullet-point summary
+- Follows consistent formatting conventions
+
+### update-pr.md
+Update existing pull requests with new commits and refreshed descriptions. This skill:
+- Verifies you're on a branch with an existing PR
+- Shows ALL commits in the branch (not just unpushed)
+- Asks for user confirmation before pushing (respects git workflow rules)
+- Recomputes PR description from scratch based on all commits
+- Updates title only if needed
+- Handles already-pushed commits gracefully
+
+## What Are Skills?
+
+Skills in Claude Code are specialized prompts or capabilities that:
+- Provide domain-specific expertise (e.g., "pdf", "xlsx")
+- Can be invoked by name during conversations
+- Work across all projects
+- Encapsulate common workflows or patterns
+
+## Creating Skills
+
+Skills can be defined to handle specific task types:
+- Document processing (PDFs, spreadsheets)
+- Code analysis patterns
+- Testing workflows
+- Deployment procedures
+- Custom domain-specific tasks
+
+## Usage
+
+Once skills are defined, they can be invoked in conversations:
+```
+/skill-name [arguments]
+```
+
+Claude Code will load the skill's prompt and execute the specialized capability.
+
+## Getting Started
+
+To add your first skill:
+1. Identify a repetitive task or specialized domain
+2. Define the skill's scope and capabilities
+3. Create the skill definition in this directory
+4. Test it across different projects
+5. Refine based on real-world usage
+
+## Best Practices
+
+- **Single responsibility**: Each skill should do one thing well
+- **Clear naming**: Use descriptive names that indicate the skill's purpose
+- **Documentation**: Include usage examples in skill definitions
+- **Reusability**: Design skills to work across different project contexts

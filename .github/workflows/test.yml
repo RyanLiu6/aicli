@@ -28,11 +28,10 @@ jobs:
       run: |
         python scripts/setup.py
 
-    - name: Verify configuration files were created
+    - name: Verify Claude Code configuration
       run: |
-        echo "Checking configuration files..."
+        echo "Checking Claude Code configuration..."
 
-        # Verify Claude config
         if [ -d ~/.claude ]; then
             echo "✓ ~/.claude directory exists"
         else
@@ -46,7 +45,7 @@ jobs:
             echo "✗ ~/.claude/CLAUDE.md symlink missing"
             exit 1
         fi
-        
+
         if [ -L ~/.claude/settings.json ]; then
             echo "✓ ~/.claude/settings.json symlink exists"
         else
@@ -56,12 +55,16 @@ jobs:
 
         if [ -L ~/.claude/skills ]; then
             echo "✓ ~/.claude/skills symlink exists"
+            ls -la ~/.claude/skills/
         else
             echo "✗ ~/.claude/skills symlink missing"
             exit 1
         fi
 
-        # Verify Gemini config
+    - name: Verify Gemini CLI configuration
+      run: |
+        echo "Checking Gemini CLI configuration..."
+
         if [ -d ~/.gemini ]; then
             echo "✓ ~/.gemini directory exists"
         else
@@ -83,10 +86,52 @@ jobs:
             exit 1
         fi
 
-        if [ -L ~/.gemini/commands ]; then
-            echo "✓ ~/.gemini/commands symlink exists"
+        # Gemini commands are generated (not symlinked) as TOML files
+        if [ -d ~/.gemini/commands ]; then
+            echo "✓ ~/.gemini/commands directory exists"
+            ls -la ~/.gemini/commands/
+            # Verify TOML files were generated
+            if [ -f ~/.gemini/commands/create-pr.toml ]; then
+                echo "✓ TOML files generated correctly"
+            else
+                echo "✗ TOML files not generated"
+                exit 1
+            fi
         else
-            echo "✗ ~/.gemini/commands symlink missing"
+            echo "✗ ~/.gemini/commands directory missing"
+            exit 1
+        fi
+
+    - name: Verify OpenCode configuration
+      run: |
+        echo "Checking OpenCode configuration..."
+
+        if [ -d ~/.config/opencode ]; then
+            echo "✓ ~/.config/opencode directory exists"
+        else
+            echo "✗ ~/.config/opencode directory missing"
+            exit 1
+        fi
+
+        if [ -L ~/.config/opencode/AGENTS.md ]; then
+            echo "✓ ~/.config/opencode/AGENTS.md symlink exists"
+        else
+            echo "✗ ~/.config/opencode/AGENTS.md symlink missing"
+            exit 1
+        fi
+
+        if [ -L ~/.config/opencode/opencode.json ]; then
+            echo "✓ ~/.config/opencode/opencode.json symlink exists"
+        else
+            echo "✗ ~/.config/opencode/opencode.json symlink missing"
+            exit 1
+        fi
+
+        if [ -L ~/.config/opencode/command ]; then
+            echo "✓ ~/.config/opencode/command symlink exists"
+            ls -la ~/.config/opencode/command/
+        else
+            echo "✗ ~/.config/opencode/command symlink missing"
             exit 1
         fi
 

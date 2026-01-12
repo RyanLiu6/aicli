@@ -6,9 +6,9 @@
       "tool_dir": "modules/claude",
       "symlinks": [
         {"source": "CLAUDE.md", "target": "CLAUDE.md"},
-        {"source": "settings.json", "target": "settings.json"},
-        {"source": "skills", "target": "skills"}
-      ]
+        {"source": "settings.json", "target": "settings.json"}
+      ],
+      "skills_symlink": {"source": "skills", "target": "skills"}
     },
     "gemini": {
       "name": "Gemini CLI",
@@ -16,9 +16,9 @@
       "tool_dir": "modules/gemini",
       "symlinks": [
         {"source": "GEMINI.md", "target": "GEMINI.md"},
-        {"source": "settings.json", "target": "settings.json"},
-        {"source": "commands", "target": "commands"}
-      ]
+        {"source": "settings.json", "target": "settings.json"}
+      ],
+      "skills_generate": {"source": "skills", "target": "commands", "format": "toml"}
     },
     "opencode": {
       "name": "OpenCode",
@@ -26,9 +26,9 @@
       "tool_dir": "modules/opencode",
       "symlinks": [
         {"source": "AGENTS.md", "target": "AGENTS.md"},
-        {"source": "opencode.json", "target": "opencode.json"},
-        {"source": "command", "target": "command"}
-      ]
+        {"source": "opencode.json", "target": "opencode.json"}
+      ],
+      "skills_symlink": {"source": "skills", "target": "command"}
     }
   }
 }

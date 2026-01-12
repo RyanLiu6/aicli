@@ -15,9 +15,40 @@ Usage:
 import argparse
 import json
 import os
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import TypedDict
+
+
+class Symlink(TypedDict):
+    source: str
+    target: str
+
+
+class SkillsSymlink(TypedDict):
+    source: str
+    target: str
+
+
+class SkillsGenerate(TypedDict):
+    source: str
+    target: str
+    format: str
+
+
+class ToolConfig(TypedDict, total=False):
+    name: str
+    config_dir: str
+    tool_dir: str
+    symlinks: list[Symlink]
+    skills_symlink: SkillsSymlink
+    skills_generate: SkillsGenerate
+
+
+class ToolsConfig(TypedDict):
+    tools: dict[str, ToolConfig]
 
 
 class Colors:
@@ -37,7 +68,7 @@ def get_repo_root() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
-def load_tools_config(repo_root: Path) -> dict:
+def load_tools_config(repo_root: Path) -> ToolsConfig:
     config_path = repo_root / "tools.json"
     if not config_path.exists():
         print_colored(f"Error: tools.json not found at {config_path}", Colors.RED)
@@ -110,7 +141,71 @@ def create_symlink(source: Path, target: Path, name: str) -> bool:
     return True
 
 
-def setup_tool(tool_id: str, tool_config: dict, repo_root: Path) -> bool:
+def parse_frontmatter(content: str) -> tuple[dict, str]:
+    """Parse YAML frontmatter from markdown content."""
+    frontmatter = {}
+    body = content
+
+    if content.startswith("---"):
+        parts = content.split("---", 2)
+        if len(parts) >= 3:
+            yaml_content = parts[1].strip()
+            body = parts[2].strip()
+
+            for line in yaml_content.split("\n"):
+                if ":" in line:
+                    key, value = line.split(":", 1)
+                    frontmatter[key.strip()] = value.strip()
+
+    return frontmatter, body
+
+
+def convert_md_to_toml(md_path: Path) -> str:
+    """Convert markdown skill to TOML command format."""
+    content = md_path.read_text()
+    frontmatter, body = parse_frontmatter(content)
+    description = frontmatter.get("description", "")
+
+    lines = []
+    if description:
+        lines.append(f'description = "{description}"')
+    lines.append('prompt = """')
+    lines.append(body)
+    lines.append('"""')
+
+    return "\n".join(lines)
+
+
+def generate_skills(source_dir: Path, target_dir: Path, fmt: str) -> bool:
+    """Generate skills in target format from source markdown files."""
+    if not source_dir.exists():
+        print_colored(f"  Warning: Skills directory not found at {source_dir}", Colors.RED)
+        return False
+
+    backup_if_exists(target_dir)
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    md_files = list(source_dir.glob("*.md"))
+    if not md_files:
+        print_colored(f"  Warning: No skill files found in {source_dir}", Colors.YELLOW)
+        return False
+
+    print_colored(f"  Generating {fmt} files in {target_dir}", Colors.GREEN)
+    for md_path in md_files:
+        if fmt == "toml":
+            output = convert_md_to_toml(md_path)
+            target_path = target_dir / f"{md_path.stem}.toml"
+        else:
+            output = md_path.read_text()
+            target_path = target_dir / md_path.name
+
+        target_path.write_text(output + "\n")
+        print(f"    {md_path.name} -> {target_path.name}")
+
+    return True
+
+
+def setup_tool(tool_id: str, tool_config: ToolConfig, repo_root: Path) -> bool:
     name = tool_config["name"]
     config_dir = Path(os.path.expanduser(tool_config["config_dir"]))
     tool_dir = repo_root / tool_config["tool_dir"]
@@ -131,7 +226,7 @@ def setup_tool(tool_id: str, tool_config: dict, repo_root: Path) -> bool:
         print_colored(f"  Creating config directory: {config_dir}", Colors.YELLOW)
         config_dir.mkdir(parents=True)
 
-    # Create symlinks
+    # Create symlinks for config files
     success = True
     for symlink in tool_config.get("symlinks", []):
         source = tool_dir / symlink["source"]
@@ -140,13 +235,30 @@ def setup_tool(tool_id: str, tool_config: dict, repo_root: Path) -> bool:
         if not create_symlink(source, target, symlink["source"]):
             success = False
 
+    # Handle skills symlink (points to root skills/ directory)
+    if "skills_symlink" in tool_config:
+        skills_cfg = tool_config["skills_symlink"]
+        source = repo_root / skills_cfg["source"]
+        target = config_dir / skills_cfg["target"]
+        if not create_symlink(source, target, f"skills -> {skills_cfg['target']}"):
+            success = False
+
+    # Handle skills generation (convert markdown to target format)
+    if "skills_generate" in tool_config:
+        skills_cfg = tool_config["skills_generate"]
+        source = repo_root / skills_cfg["source"]
+        target = config_dir / skills_cfg["target"]
+        fmt = skills_cfg.get("format", "md")
+        if not generate_skills(source, target, fmt):
+            success = False
+
     # Setup shell aliases if needed
     setup_shell_alias(tool_id)
 
     return success
 
 
-def list_tools(config: dict) -> None:
+def list_tools(config: ToolsConfig) -> None:
     print_colored("\nAvailable tools:", Colors.BOLD)
     print_colored("-" * 40, Colors.BLUE)
 

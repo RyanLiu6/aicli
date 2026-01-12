@@ -11,14 +11,6 @@ dependencies = [
 [project.scripts]
 help = "scripts.cli:main"
 setup = "scripts.setup:main"
-sync = "scripts.sync_skills:main"
-sync-all = "scripts.sync_skills:sync_from_canonical"
-claude-to-gemini = "scripts.sync_skills:claude_to_gemini"
-claude-to-opencode = "scripts.sync_skills:claude_to_opencode"
-gemini-to-claude = "scripts.sync_skills:gemini_to_claude"
-gemini-to-opencode = "scripts.sync_skills:gemini_to_opencode"
-opencode-to-claude = "scripts.sync_skills:opencode_to_claude"
-opencode-to-gemini = "scripts.sync_skills:opencode_to_gemini"
 
 [build-system]
 requires = ["hatchling"]

@@ -26,7 +26,7 @@ else
   TITLE="Claude Code | ${REPO_NAME}"
 fi
 
-# Set terminal title via escape sequence
-printf "\033]0;%s\007" "$TITLE"
+# Set terminal title via escape sequence (write to /dev/tty to bypass capture)
+printf "\033]0;%s\007" "$TITLE" > /dev/tty 2>/dev/null
 
 exit 0

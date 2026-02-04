@@ -46,18 +46,13 @@ jobs:
             exit 1
         fi
 
-        if [ -L ~/.claude/settings.json ]; then
-            echo "✓ ~/.claude/settings.json symlink exists"
-        else
-            echo "✗ ~/.claude/settings.json symlink missing"
-            exit 1
-        fi
+        # Note: settings.json is user-created from settings.template.json, not checked in CI
 
-        if [ -L ~/.claude/skills ]; then
-            echo "✓ ~/.claude/skills symlink exists"
+        if [ -d ~/.claude/skills ]; then
+            echo "✓ ~/.claude/skills directory exists"
             ls -la ~/.claude/skills/
         else
-            echo "✗ ~/.claude/skills symlink missing"
+            echo "✗ ~/.claude/skills directory missing"
             exit 1
         fi
 

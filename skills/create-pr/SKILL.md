@@ -1,4 +1,5 @@
 ---
+name: create-pr
 description: Create pull requests with concise descriptions
 ---
 
@@ -20,35 +21,46 @@ Create a pull request with a concise, well-formatted description.
 Keep it **very concise**. Use this structure:
 
 ```
-## Summary
-<1-3 bullet points of what changed>
+### Why are you making these changes?
 
-## Test plan
-[Optional: Only if testing steps are needed]
+<1-3 sentences explaining the motivation/problem being solved>
+
+### How was this tested?
+
+<Brief description of testing approach>
 ```
 
 ### Good examples
 
 ```
-## Summary
-- Fix deduplication in welcome message
-- Add sorting to package list
-- Improve logging on package updates
+### Why are you making these changes?
+
+Fix deduplication bug in welcome message that caused duplicate entries when users rejoined.
+
+### How was this tested?
+
+Manual testing with multiple rejoin scenarios. Added unit test for dedup logic.
 ```
 
 ```
-## Summary
-- Add cache timestamp on initial install
-- Prevent stale cache issues
+### Why are you making these changes?
+
+Add cache timestamp on initial install to prevent stale cache issues reported in #123.
+
+### How was this tested?
+
+Verified cache invalidation works correctly after fresh install and upgrade paths.
 ```
 
 ### Bad examples (too verbose)
 
 ```
-## Summary
-- This PR implements a comprehensive solution to fix the deduplication
-  logic in the welcome message handler by refactoring the underlying
-  data structure and adding a new sorting algorithm...
+### Why are you making these changes?
+
+This PR implements a comprehensive solution to fix the deduplication
+logic in the welcome message handler by refactoring the underlying
+data structure and adding a new sorting algorithm that improves
+performance by 50% while also addressing technical debt...
 ```
 
 ## Instructions
@@ -77,10 +89,13 @@ Keep it **very concise**. Use this structure:
 6. Create PR with concise description:
    ```bash
    gh pr create --title "Brief title" --body "$(cat <<'EOF'
-   ## Summary
-   - First change
-   - Second change
-   - Third change
+   ### Why are you making these changes?
+
+   Brief explanation of what this change does and why.
+
+   ### How was this tested?
+
+   Description of testing approach.
    EOF
    )"
    ```

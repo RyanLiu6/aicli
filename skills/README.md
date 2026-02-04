@@ -2,14 +2,27 @@
 
 Reusable skills that can be invoked across different projects in Claude Code.
 
-## Purpose
+## Directory Structure
 
-Skills are specialized capabilities that can be called by name to perform specific tasks. They provide domain expertise and can be reused across all your projects.
+Each skill must be in its own subdirectory with a `SKILL.md` file:
+
+```
+skills/
+├── create-pr/
+│   └── SKILL.md
+├── daniel/
+│   └── SKILL.md
+├── make-commits/
+│   └── SKILL.md
+├── update-pr/
+│   └── SKILL.md
+└── README.md
+```
 
 ## Current Skills
 
-### make-commits.md
-Analyze the working tree and create logical commits from staged/unstaged changes. This skill:
+### /make-commits
+Analyze the working tree and create logical commits from staged/unstaged changes:
 - Breaks changes into logical groups (features, bug fixes, components)
 - Runs lints and type-checks before committing
 - Creates commits with descriptive messages following repo style
@@ -17,16 +30,16 @@ Analyze the working tree and create logical commits from staged/unstaged changes
 - Never commits to main/master directly
 - Does NOT push - only creates local commits
 
-### create-pr.md
-Create pull requests with concise, well-formatted descriptions. This skill:
+### /create-pr
+Create pull requests with concise, well-formatted descriptions:
 - Ensures you're on a feature branch (not main/master)
 - Reviews commits and changes
 - Asks for user confirmation before pushing (respects git workflow rules)
 - Creates PR with concise bullet-point summary
 - Follows consistent formatting conventions
 
-### update-pr.md
-Update existing pull requests with new commits and refreshed descriptions. This skill:
+### /update-pr
+Update existing pull requests with new commits and refreshed descriptions:
 - Verifies you're on a branch with an existing PR
 - Shows ALL commits in the branch (not just unpushed)
 - Asks for user confirmation before pushing (respects git workflow rules)
@@ -34,44 +47,46 @@ Update existing pull requests with new commits and refreshed descriptions. This 
 - Updates title only if needed
 - Handles already-pushed commits gracefully
 
-## What Are Skills?
+### /daniel
+Code review from Daniel's perspective:
+- Identifies unnecessary complexity and performance issues
+- Checks for inconsistencies and dead/legacy code
+- Suggests native/library alternatives
+- Reviews React hook issues and TypeScript patterns
 
-Skills in Claude Code are specialized prompts or capabilities that:
-- Provide domain-specific expertise (e.g., "pdf", "xlsx")
-- Can be invoked by name during conversations
-- Work across all projects
-- Encapsulate common workflows or patterns
+## Creating New Skills
 
-## Creating Skills
+Each skill needs:
 
-Skills can be defined to handle specific task types:
-- Document processing (PDFs, spreadsheets)
-- Code analysis patterns
-- Testing workflows
-- Deployment procedures
-- Custom domain-specific tasks
+1. **Directory**: `skills/<skill-name>/`
+2. **SKILL.md file** with YAML frontmatter:
+
+```yaml
+---
+name: skill-name
+description: Brief description of what this skill does
+---
+
+# Skill Title
+
+Instructions and content here...
+```
+
+### Frontmatter Fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | No | Display name (defaults to directory name) |
+| `description` | Recommended | What the skill does and when to use it |
+| `disable-model-invocation` | No | Set `true` to prevent auto-loading |
+| `user-invocable` | No | Set `false` to hide from `/` menu |
+| `argument-hint` | No | Hint for autocomplete (e.g., `[issue-number]`) |
 
 ## Usage
 
-Once skills are defined, they can be invoked in conversations:
+Invoke skills with slash commands:
 ```
 /skill-name [arguments]
 ```
 
 Claude Code will load the skill's prompt and execute the specialized capability.
-
-## Getting Started
-
-To add your first skill:
-1. Identify a repetitive task or specialized domain
-2. Define the skill's scope and capabilities
-3. Create the skill definition in this directory
-4. Test it across different projects
-5. Refine based on real-world usage
-
-## Best Practices
-
-- **Single responsibility**: Each skill should do one thing well
-- **Clear naming**: Use descriptive names that indicate the skill's purpose
-- **Documentation**: Include usage examples in skill definitions
-- **Reusability**: Design skills to work across different project contexts

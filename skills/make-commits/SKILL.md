@@ -1,3 +1,8 @@
+---
+name: make-commits
+description: Analyze working tree and create logical commits from staged/unstaged changes
+---
+
 # Make Commits
 
 Analyze the current working tree and create logical commits from the staged and unstaged changes.

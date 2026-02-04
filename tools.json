@@ -6,9 +6,10 @@
       "tool_dir": "modules/claude",
       "symlinks": [
         {"source": "CLAUDE.md", "target": "CLAUDE.md"},
-        {"source": "settings.json", "target": "settings.json"}
+        {"source": "hooks", "target": "hooks"}
       ],
-      "skills_symlink": {"source": "skills", "target": "skills"}
+      "skills_symlink": {"source": "skills", "target": "skills"},
+      "extra_skills_dirs": ["work/skills"]
     },
     "gemini": {
       "name": "Gemini CLI",

@@ -45,6 +45,7 @@ class ToolConfig(TypedDict, total=False):
     symlinks: list[Symlink]
     skills_symlink: SkillsSymlink
     skills_generate: SkillsGenerate
+    extra_skills_dirs: list[str]
 
 
 class ToolsConfig(TypedDict):
@@ -176,6 +177,28 @@ def convert_md_to_toml(md_path: Path) -> str:
     return "\n".join(lines)
 
 
+def find_skill_files(source_dir: Path) -> list[tuple[str, Path]]:
+    """Find skill files in either format (flat .md or subdirs with SKILL.md).
+
+    Returns list of (skill_name, skill_path) tuples.
+    """
+    skills = []
+
+    # New format: subdirectories with SKILL.md
+    for skill_dir in source_dir.iterdir():
+        if skill_dir.is_dir():
+            skill_file = skill_dir / "SKILL.md"
+            if skill_file.exists():
+                skills.append((skill_dir.name, skill_file))
+
+    # Legacy format: flat .md files (excluding README.md)
+    for md_file in source_dir.glob("*.md"):
+        if md_file.name.lower() != "readme.md":
+            skills.append((md_file.stem, md_file))
+
+    return skills
+
+
 def generate_skills(source_dir: Path, target_dir: Path, fmt: str) -> bool:
     """Generate skills in target format from source markdown files."""
     if not source_dir.exists():
@@ -185,24 +208,71 @@ def generate_skills(source_dir: Path, target_dir: Path, fmt: str) -> bool:
     backup_if_exists(target_dir)
     target_dir.mkdir(parents=True, exist_ok=True)
 
-    md_files = list(source_dir.glob("*.md"))
-    if not md_files:
+    skills = find_skill_files(source_dir)
+    if not skills:
         print_colored(f"  Warning: No skill files found in {source_dir}", Colors.YELLOW)
         return False
 
     print_colored(f"  Generating {fmt} files in {target_dir}", Colors.GREEN)
-    for md_path in md_files:
+    for skill_name, skill_path in skills:
         if fmt == "toml":
-            output = convert_md_to_toml(md_path)
-            target_path = target_dir / f"{md_path.stem}.toml"
+            output = convert_md_to_toml(skill_path)
+            target_path = target_dir / f"{skill_name}.toml"
         else:
-            output = md_path.read_text()
-            target_path = target_dir / md_path.name
+            output = skill_path.read_text()
+            target_path = target_dir / f"{skill_name}.md"
 
         target_path.write_text(output + "\n")
-        print(f"    {md_path.name} -> {target_path.name}")
+        print(f"    {skill_path.name} ({skill_name}) -> {target_path.name}")
 
     return True
+
+
+def symlink_skills_to_config(
+    skills_dirs: list[Path],
+    target_dir: Path,
+    label: str,
+) -> bool:
+    """Symlink individual skills from source directories into the config skills directory.
+
+    Args:
+        skills_dirs: List of directories containing skills (each subdir with SKILL.md).
+        target_dir: The config skills directory (e.g., ~/.claude/skills/).
+        label: Label for logging (e.g., "public skills" or "work skills").
+
+    Returns:
+        True if all symlinks were created successfully, False if any failed.
+    """
+    success = True
+
+    for source_dir in skills_dirs:
+        if not source_dir.exists():
+            print_colored(f"  Info: {label} dir {source_dir} not found, skipping", Colors.YELLOW)
+            continue
+
+        print_colored(f"  Linking {label} from {source_dir}", Colors.GREEN)
+
+        for skill_dir in source_dir.iterdir():
+            if not skill_dir.is_dir():
+                continue
+
+            skill_file = skill_dir / "SKILL.md"
+            if not skill_file.exists():
+                continue
+
+            target_link = target_dir / skill_dir.name
+
+            if target_link.exists() or target_link.is_symlink():
+                if target_link.is_symlink():
+                    target_link.unlink()
+                else:
+                    import shutil
+                    shutil.rmtree(target_link)
+
+            target_link.symlink_to(skill_dir)
+            print(f"    {skill_dir.name} -> {skill_dir}")
+
+    return success
 
 
 def setup_tool(tool_id: str, tool_config: ToolConfig, repo_root: Path) -> bool:
@@ -235,12 +305,27 @@ def setup_tool(tool_id: str, tool_config: ToolConfig, repo_root: Path) -> bool:
         if not create_symlink(source, target, symlink["source"]):
             success = False
 
-    # Handle skills symlink (points to root skills/ directory)
+    # Handle skills symlink (symlink individual skills into config dir)
     if "skills_symlink" in tool_config:
         skills_cfg = tool_config["skills_symlink"]
-        source = repo_root / skills_cfg["source"]
-        target = config_dir / skills_cfg["target"]
-        if not create_symlink(source, target, f"skills -> {skills_cfg['target']}"):
+        source_dir = repo_root / skills_cfg["source"]
+        target_dir = config_dir / skills_cfg["target"]
+
+        # Create target directory if needed (instead of symlinking whole dir)
+        backup_if_exists(target_dir)
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        # Collect all skills directories to symlink
+        skills_dirs = [source_dir]
+
+        # Add extra skills directories
+        for extra_dir_str in tool_config.get("extra_skills_dirs", []):
+            if extra_dir_str.startswith("~"):
+                skills_dirs.append(Path(os.path.expanduser(extra_dir_str)))
+            else:
+                skills_dirs.append(repo_root / extra_dir_str)
+
+        if not symlink_skills_to_config(skills_dirs, target_dir, "skills"):
             success = False
 
     # Handle skills generation (convert markdown to target format)

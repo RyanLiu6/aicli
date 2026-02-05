@@ -122,11 +122,11 @@ jobs:
             exit 1
         fi
 
-        if [ -L ~/.config/opencode/command ]; then
-            echo "✓ ~/.config/opencode/command symlink exists"
+        if [ -d ~/.config/opencode/command ]; then
+            echo "✓ ~/.config/opencode/command directory exists"
             ls -la ~/.config/opencode/command/
         else
-            echo "✗ ~/.config/opencode/command symlink missing"
+            echo "✗ ~/.config/opencode/command directory missing"
             exit 1
         fi
 

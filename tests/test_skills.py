@@ -22,7 +22,7 @@ def _get_skill_ids(repo_root: Path) -> list[str]:
     "skill_name",
     _get_skill_ids(Path(__file__).resolve().parent.parent),
 )
-def test_skill_has_valid_frontmatter(skill_name: str, repo_root: Path):
+def test_skill_has_valid_frontmatter(skill_name: str, repo_root: Path) -> None:
     skills = dict(_collect_skill_files(repo_root))
     skill_path = skills[skill_name]
     content = skill_path.read_text()
@@ -40,7 +40,7 @@ def test_skill_has_valid_frontmatter(skill_name: str, repo_root: Path):
     "skill_name",
     _get_skill_ids(Path(__file__).resolve().parent.parent),
 )
-def test_skill_name_matches_directory(skill_name: str, repo_root: Path):
+def test_skill_name_matches_directory(skill_name: str, repo_root: Path) -> None:
     skills = dict(_collect_skill_files(repo_root))
     skill_path = skills[skill_name]
     content = skill_path.read_text()
@@ -57,7 +57,7 @@ def test_skill_name_matches_directory(skill_name: str, repo_root: Path):
     "skill_name",
     _get_skill_ids(Path(__file__).resolve().parent.parent),
 )
-def test_skill_at_references_resolve(skill_name: str, repo_root: Path):
+def test_skill_at_references_resolve(skill_name: str, repo_root: Path) -> None:
     skills = dict(_collect_skill_files(repo_root))
     skill_path = skills[skill_name]
     content = skill_path.read_text()
@@ -74,7 +74,7 @@ def test_skill_at_references_resolve(skill_name: str, repo_root: Path):
     "skill_name",
     _get_skill_ids(Path(__file__).resolve().parent.parent),
 )
-def test_skill_converts_to_toml(skill_name: str, repo_root: Path):
+def test_skill_converts_to_toml(skill_name: str, repo_root: Path) -> None:
     skills = dict(_collect_skill_files(repo_root))
     skill_path = skills[skill_name]
 
@@ -85,7 +85,7 @@ def test_skill_converts_to_toml(skill_name: str, repo_root: Path):
     assert toml_output.rstrip().endswith('"""'), f"{skill_path}: TOML prompt block not closed"
 
 
-def test_no_duplicate_skill_names(repo_root: Path):
+def test_no_duplicate_skill_names(repo_root: Path) -> None:
     skills = _collect_skill_files(repo_root)
     names = [name for name, _ in skills]
     duplicates = [name for name in names if names.count(name) > 1]

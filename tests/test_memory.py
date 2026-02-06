@@ -12,7 +12,7 @@ def _get_memory_files(memory_dir: Path) -> list[str]:
     "filename",
     _get_memory_files(Path(__file__).resolve().parent.parent / "memory"),
 )
-def test_memory_file_not_empty(filename: str, memory_dir: Path):
+def test_memory_file_not_empty(filename: str, memory_dir: Path) -> None:
     content = (memory_dir / filename).read_text()
     assert len(content.strip()) > 0
 
@@ -21,7 +21,7 @@ def test_memory_file_not_empty(filename: str, memory_dir: Path):
     "filename",
     _get_memory_files(Path(__file__).resolve().parent.parent / "memory"),
 )
-def test_memory_file_has_heading(filename: str, memory_dir: Path):
+def test_memory_file_has_heading(filename: str, memory_dir: Path) -> None:
     content = (memory_dir / filename).read_text()
     assert re.search(r"^#\s+", content, re.MULTILINE), (
         f"memory/{filename}: missing top-level heading"
@@ -30,7 +30,7 @@ def test_memory_file_has_heading(filename: str, memory_dir: Path):
 
 def test_tool_configs_reference_all_memory_files(
     repo_root: Path, memory_dir: Path, modules_dir: Path
-):
+) -> None:
     memory_files = sorted(memory_dir.glob("*.md"))
 
     for tool_dir in sorted(modules_dir.iterdir()):
@@ -51,7 +51,7 @@ def test_tool_configs_reference_all_memory_files(
             )
 
 
-def test_tool_config_at_references_resolve(modules_dir: Path):
+def test_tool_config_at_references_resolve(modules_dir: Path) -> None:
     for tool_dir in sorted(modules_dir.iterdir()):
         if not tool_dir.is_dir():
             continue

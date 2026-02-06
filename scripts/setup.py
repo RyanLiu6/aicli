@@ -76,7 +76,8 @@ def load_tools_config(repo_root: Path) -> ToolsConfig:
         sys.exit(1)
 
     with open(config_path) as f:
-        return json.load(f)
+        config: ToolsConfig = json.load(f)
+    return config
 
 
 SHELL_ALIASES = {

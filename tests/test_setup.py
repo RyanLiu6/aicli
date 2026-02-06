@@ -4,7 +4,7 @@ from textwrap import dedent
 from scripts.setup import convert_md_to_toml, find_skill_files, parse_frontmatter
 
 
-def test_parse_frontmatter():
+def test_parse_frontmatter() -> None:
     content = dedent("""\
         ---
         name: test-skill
@@ -20,7 +20,7 @@ def test_parse_frontmatter():
     assert "# Body content" in body
 
 
-def test_parse_frontmatter_no_frontmatter():
+def test_parse_frontmatter_no_frontmatter() -> None:
     content = "# Just a heading\n\nSome content."
     frontmatter, body = parse_frontmatter(content)
 
@@ -28,7 +28,7 @@ def test_parse_frontmatter_no_frontmatter():
     assert body == content
 
 
-def test_parse_frontmatter_empty_values():
+def test_parse_frontmatter_empty_values() -> None:
     content = dedent("""\
         ---
         name: my-skill
@@ -44,7 +44,7 @@ def test_parse_frontmatter_empty_values():
     assert "Body here." in body
 
 
-def test_convert_md_to_toml(tmp_path: Path):
+def test_convert_md_to_toml(tmp_path: Path) -> None:
     skill_file = tmp_path / "SKILL.md"
     skill_file.write_text(
         dedent("""\
@@ -68,7 +68,7 @@ def test_convert_md_to_toml(tmp_path: Path):
     assert result.rstrip().endswith('"""')
 
 
-def test_convert_md_to_toml_no_frontmatter(tmp_path: Path):
+def test_convert_md_to_toml_no_frontmatter(tmp_path: Path) -> None:
     skill_file = tmp_path / "SKILL.md"
     skill_file.write_text("# Just content\n\nNo frontmatter here.")
 
@@ -79,7 +79,7 @@ def test_convert_md_to_toml_no_frontmatter(tmp_path: Path):
     assert "# Just content" in result
 
 
-def test_find_skill_files(tmp_path: Path):
+def test_find_skill_files(tmp_path: Path) -> None:
     skill_a = tmp_path / "skill-a"
     skill_a.mkdir()
     (skill_a / "SKILL.md").write_text("---\nname: skill-a\n---\n# A")
@@ -96,7 +96,7 @@ def test_find_skill_files(tmp_path: Path):
     assert names == ["skill-a", "skill-b"]
 
 
-def test_find_skill_files_ignores_readme(tmp_path: Path):
+def test_find_skill_files_ignores_readme(tmp_path: Path) -> None:
     (tmp_path / "README.md").write_text("# Skills readme")
     skill = tmp_path / "my-skill"
     skill.mkdir()

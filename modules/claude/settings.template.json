@@ -48,33 +48,24 @@
   },
   "alwaysThinkingEnabled": true,
   "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/set-terminal-title.sh"
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/set-terminal-title.sh"
-          }
-        ]
-      }
-    ],
     "Notification": [
       {
         "matcher": "idle_prompt",
         "hooks": [
           {
             "type": "command",
-            "command": "osascript -e 'display notification \"Claude is waiting for your input\" with title \"Claude Code\" sound name \"Glass\"'"
+            "command": "~/.claude/hooks/notify.sh idle_prompt"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/notify.sh stop"
           }
         ]
       }

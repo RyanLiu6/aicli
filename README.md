@@ -7,9 +7,8 @@ Unified configuration for AI CLI tools ([Claude Code](https://claude.com/claude-
 ```bash
 git clone git@github.com:RyanLiu6/aicli.git ~/aicli
 cd ~/aicli
-uv sync              # install dependencies
-uv run setup         # setup all tools
-uv run setup claude  # setup specific tool
+./scripts/bootstrap    # install dependencies and setup all tools
+uv run setup claude    # setup specific tool only
 ```
 
 ## Structure
@@ -20,10 +19,17 @@ uv run setup claude  # setup specific tool
 ├── templates/              # PR and review templates
 ├── modules/
 │   ├── claude/             # Claude Code config (CLAUDE.md, settings.json)
+│   │   └── hooks/          # Claude Code hooks (e.g., notify.sh)
 │   ├── gemini/             # Gemini CLI config (GEMINI.md, settings.json)
 │   └── opencode/           # OpenCode config (AGENTS.md, opencode.json)
+├── scripts/
+│   ├── bootstrap           # One-command setup (uv sync + setup)
+│   ├── cli.py              # CLI entry point
+│   └── setup.py            # Creates symlinks and generates skills
+├── tests/                  # Pytest test suite
+├── tasks.py                # Invoke tasks (test, lint, format, typecheck)
 ├── tools.json              # Tool definitions for setup script
-└── scripts/setup.py        # Creates symlinks and generates skills
+└── .pre-commit-config.yaml # Pre-commit hooks (ruff format + check)
 ```
 
 ## How It Works
@@ -34,6 +40,37 @@ The `setup.py` script:
 3. For Gemini: generates TOML files from markdown skills on-the-fly
 
 No manual syncing needed - just run `uv run setup` after adding or modifying skills.
+
+## Development
+
+### Tasks
+
+Development tasks are managed via [Invoke](https://www.pyinvoke.org/):
+
+```bash
+inv test                # run tests
+inv lint                # run ruff check
+inv lint --fix          # run ruff check with auto-fix
+inv format              # run ruff format
+inv format --check      # check formatting without modifying
+inv typecheck           # run pyright
+```
+
+### Pre-commit
+
+```bash
+uv run pre-commit install
+```
+
+Runs ruff format and ruff check on staged files before each commit.
+
+### Bootstrap
+
+`./scripts/bootstrap` runs `uv sync` followed by `uv run setup` in one step - useful for fresh clones or CI.
+
+## CI
+
+GitHub Actions runs lint, typecheck, and tests on pull requests (macOS and Ubuntu).
 
 ## Adding Shared Rules
 

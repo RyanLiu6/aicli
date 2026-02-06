@@ -13,7 +13,6 @@ COMMANDS = {
 
 
 def main() -> None:
-    """Show available commands."""
     console = Console()
 
     table = Table(title="Available Commands", show_header=True, header_style="bold")

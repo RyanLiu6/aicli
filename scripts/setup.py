@@ -15,7 +15,7 @@ Usage:
 import argparse
 import json
 import os
-import re
+import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -88,7 +88,6 @@ SHELL_ALIASES = {
 
 
 def setup_shell_alias(tool_id: str) -> bool:
-    """Add shell alias to ~/.zshrc if it doesn't exist."""
     if tool_id not in SHELL_ALIASES:
         return True
 
@@ -99,22 +98,22 @@ def setup_shell_alias(tool_id: str) -> bool:
     zshrc_path = Path.home() / ".zshrc"
 
     if not zshrc_path.exists():
-        print_colored(f"  Warning: ~/.zshrc not found, skipping alias setup", Colors.YELLOW)
+        print_colored("  Warning: ~/.zshrc not found, skipping alias setup", Colors.YELLOW)
         return False
 
     with open(zshrc_path) as f:
         content = f.read()
 
     if alias_line in content:
-        print_colored(f"  Alias already exists in ~/.zshrc", Colors.GREEN)
+        print_colored("  Alias already exists in ~/.zshrc", Colors.GREEN)
         return True
 
-    print_colored(f"  Adding alias to ~/.zshrc", Colors.GREEN)
+    print_colored("  Adding alias to ~/.zshrc", Colors.GREEN)
     with open(zshrc_path, "a") as f:
         f.write(f"\n{comment_line}\n{alias_line}\n")
 
     print(f"    Added: {alias_line}")
-    print_colored(f"  Run 'source ~/.zshrc' or restart your shell to apply", Colors.YELLOW)
+    print_colored("  Run 'source ~/.zshrc' or restart your shell to apply", Colors.YELLOW)
     return True
 
 
@@ -142,9 +141,17 @@ def create_symlink(source: Path, target: Path, name: str) -> bool:
     return True
 
 
-def parse_frontmatter(content: str) -> tuple[dict, str]:
-    """Parse YAML frontmatter from markdown content."""
-    frontmatter = {}
+def parse_frontmatter(content: str) -> tuple[dict[str, str], str]:
+    """Parse YAML frontmatter delimited by --- from markdown content.
+
+    Args:
+        content: Raw markdown string, optionally starting with --- delimited frontmatter.
+
+    Returns:
+        Tuple of (frontmatter dict, body string). If no frontmatter is found,
+        returns an empty dict and the original content.
+    """
+    frontmatter: dict[str, str] = {}
     body = content
 
     if content.startswith("---"):
@@ -162,7 +169,17 @@ def parse_frontmatter(content: str) -> tuple[dict, str]:
 
 
 def convert_md_to_toml(md_path: Path) -> str:
-    """Convert markdown skill to TOML command format."""
+    """Convert a markdown skill file to Gemini CLI's TOML command format.
+
+    Extracts the description from YAML frontmatter and wraps the markdown body
+    in a triple-quoted prompt field.
+
+    Args:
+        md_path: Path to the markdown skill file (e.g., SKILL.md).
+
+    Returns:
+        TOML-formatted string with description and prompt fields.
+    """
     content = md_path.read_text()
     frontmatter, body = parse_frontmatter(content)
     description = frontmatter.get("description", "")
@@ -178,20 +195,26 @@ def convert_md_to_toml(md_path: Path) -> str:
 
 
 def find_skill_files(source_dir: Path) -> list[tuple[str, Path]]:
-    """Find skill files in either format (flat .md or subdirs with SKILL.md).
+    """Discover skill files in both subdirectory and flat-file formats.
 
-    Returns list of (skill_name, skill_path) tuples.
+    Searches for skills in two formats: subdirectories containing a SKILL.md file
+    (preferred), and legacy flat .md files (excluding README.md).
+
+    Args:
+        source_dir: Root directory to search for skills.
+
+    Returns:
+        List of (skill_name, skill_path) tuples. skill_name is derived from
+        the subdirectory name or the file stem.
     """
     skills = []
 
-    # New format: subdirectories with SKILL.md
     for skill_dir in source_dir.iterdir():
         if skill_dir.is_dir():
             skill_file = skill_dir / "SKILL.md"
             if skill_file.exists():
                 skills.append((skill_dir.name, skill_file))
 
-    # Legacy format: flat .md files (excluding README.md)
     for md_file in source_dir.glob("*.md"):
         if md_file.name.lower() != "readme.md":
             skills.append((md_file.stem, md_file))
@@ -200,7 +223,6 @@ def find_skill_files(source_dir: Path) -> list[tuple[str, Path]]:
 
 
 def generate_skills(source_dir: Path, target_dir: Path, fmt: str) -> bool:
-    """Generate skills in target format from source markdown files."""
     if not source_dir.exists():
         print_colored(f"  Warning: Skills directory not found at {source_dir}", Colors.RED)
         return False
@@ -266,7 +288,6 @@ def symlink_skills_to_config(
                 if target_link.is_symlink():
                     target_link.unlink()
                 else:
-                    import shutil
                     shutil.rmtree(target_link)
 
             target_link.symlink_to(skill_dir)
@@ -357,7 +378,7 @@ def list_tools(config: ToolsConfig) -> None:
         print()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Setup symlinks for AI CLI tools",
         formatter_class=argparse.RawDescriptionHelpFormatter,

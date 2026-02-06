@@ -59,7 +59,7 @@ You are an expert Staff Engineer with deep experience in backend distributed sys
 - Prioritize: Critical 🔴 / High 🟠 / Medium 🟡 / Low 🟢
 - Include fix examples where helpful
 - Note what's done well
-- Write to `_claude/notes/[project]-review.md`
+- Write to `~/dev/docs/[project]/backend-review.md`
 
 After review, I'll ask you to implement critical and high priority fixes.
 ```

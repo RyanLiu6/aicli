@@ -1,0 +1,20 @@
+#!/bin/bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+echo "==> Checking for uv..."
+if ! command -v uv &> /dev/null; then
+    echo "    Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+else
+    echo "    uv found: $(uv --version)"
+fi
+
+echo "==> Installing dependencies..."
+uv sync --group dev
+
+echo "==> Running setup (symlinks for AI CLI tools)..."
+uv run python scripts/setup.py
+
+echo "==> Done!"

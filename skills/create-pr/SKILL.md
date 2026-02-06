@@ -100,7 +100,7 @@ performance by 50% while also addressing technical debt...
    )"
    ```
 
-7. Return the PR URL to the user
+7. Open the PR using `open`.
 
 ## Key principles
 

@@ -8,9 +8,9 @@ Each skill must be in its own subdirectory with a `SKILL.md` file:
 
 ```
 skills/
-├── create-pr/
+├── clean-docs/
 │   └── SKILL.md
-├── daniel/
+├── create-pr/
 │   └── SKILL.md
 ├── make-commits/
 │   └── SKILL.md
@@ -20,6 +20,12 @@ skills/
 ```
 
 ## Current Skills
+
+### /clean-docs
+Evaluate and clean stale documentation from `~/dev/docs/`:
+- Scans project note files for staleness
+- Uses sub-agents to assess relevance
+- Removes or flags outdated docs
 
 ### /make-commits
 Analyze the working tree and create logical commits from staged/unstaged changes:
@@ -46,13 +52,6 @@ Update existing pull requests with new commits and refreshed descriptions:
 - Recomputes PR description from scratch based on all commits
 - Updates title only if needed
 - Handles already-pushed commits gracefully
-
-### /daniel
-Code review from Daniel's perspective:
-- Identifies unnecessary complexity and performance issues
-- Checks for inconsistencies and dead/legacy code
-- Suggests native/library alternatives
-- Reviews React hook issues and TypeScript patterns
 
 ## Creating New Skills
 

@@ -2,6 +2,9 @@
 
 Unified configuration for AI CLI tools ([Claude Code](https://claude.com/claude-code), [Gemini CLI](https://github.com/google-gemini/gemini-cli), [OpenCode](https://opencode.ai/)).
 
+> [!NOTE]
+> This repo has been deprecated, please checkout [home](https://github.com/RyanLiu6/home) instead.
+
 ## Setup
 
 ```bash
